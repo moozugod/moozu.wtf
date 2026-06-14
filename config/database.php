@@ -1,38 +1,41 @@
 <?php
 /**
- * Database Configuration
- * Railway/Render-ready: reads database credentials from environment variables.
- * Do not hard-code real database passwords in this file.
+ * Database Configuration for Render + Railway
  */
 
-// Database connection settings
-// Railway MySQL variables: MYSQLHOST, MYSQLDATABASE, MYSQLUSER, MYSQLPASSWORD, MYSQLPORT
-// Generic fallback variables: DB_HOST, DB_NAME, DB_USER, DB_PASS, DB_PORT
-if (!defined('DB_HOST')) define('DB_HOST', getenv('MYSQLHOST') ?: getenv('DB_HOST') ?: 'localhost');
-if (!defined('DB_NAME')) define('DB_NAME', getenv('MYSQLDATABASE') ?: getenv('DB_NAME') ?: 'railway');
-if (!defined('DB_USER')) define('DB_USER', getenv('MYSQLUSER') ?: getenv('DB_USER') ?: 'root');
-if (!defined('DB_PASS')) define('DB_PASS', getenv('MYSQLPASSWORD') ?: getenv('DB_PASS') ?: '');
-if (!defined('DB_PORT')) define('DB_PORT', getenv('MYSQLPORT') ?: getenv('DB_PORT') ?: '3306');
+$dbUrl = getenv('MYSQL_PUBLIC_URL') ?: getenv('DATABASE_URL') ?: getenv('MYSQL_URL');
 
-// Application settings
-if (!defined('JWT_SECRET')) define('JWT_SECRET', getenv('JWT_SECRET') ?: 'change-this-jwt-secret-in-render-variables');
-if (!defined('SITE_URL')) define('SITE_URL', getenv('SITE_URL') ?: 'https://moozu.wtf');
+if ($dbUrl) {
+    $parts = parse_url($dbUrl);
 
-// Admin credentials
-if (!defined('ADMIN_USERNAME')) define('ADMIN_USERNAME', getenv('ADMIN_USERNAME') ?: 'moozu');
-if (!defined('ADMIN_PASSWORD')) define('ADMIN_PASSWORD', getenv('ADMIN_PASSWORD') ?: 'Moozu@Admin2024!');
+    define('DB_HOST', $parts['host'] ?? '');
+    define('DB_PORT', $parts['port'] ?? '3306');
+    define('DB_NAME', isset($parts['path']) ? ltrim($parts['path'], '/') : '');
+    define('DB_USER', isset($parts['user']) ? urldecode($parts['user']) : '');
+    define('DB_PASS', isset($parts['pass']) ? urldecode($parts['pass']) : '');
+} else {
+    define('DB_HOST', getenv('MYSQLHOST') ?: '');
+    define('DB_PORT', getenv('MYSQLPORT') ?: '3306');
+    define('DB_NAME', getenv('MYSQLDATABASE') ?: '');
+    define('DB_USER', getenv('MYSQLUSER') ?: '');
+    define('DB_PASS', getenv('MYSQLPASSWORD') ?: '');
+}
 
-// File upload settings
-if (!defined('MAX_FILE_SIZE')) define('MAX_FILE_SIZE', 100 * 1024 * 1024); // 100MB
-if (!defined('ALLOWED_EXTENSIONS')) define('ALLOWED_EXTENSIONS', ['zip', 'exe', 'rar']);
+define('JWT_SECRET', getenv('JWT_SECRET') ?: 'ezpzy');
+define('SITE_URL', getenv('SITE_URL') ?: 'https://moozu-wtf.onrender.com');
 
-/**
- * Database Connection Function
- */
+define('ADMIN_USERNAME', getenv('ADMIN_USERNAME') ?: 'moozu');
+define('ADMIN_PASSWORD', getenv('ADMIN_PASSWORD') ?: 'Moozu@Admin2024!');
+
+define('MAX_FILE_SIZE', 100 * 1024 * 1024);
+define('ALLOWED_EXTENSIONS', ['zip', 'exe', 'rar']);
+
 function getDBConnection() {
     try {
+        $dsn = "mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME . ";charset=utf8mb4";
+
         $pdo = new PDO(
-            "mysql:host=" . DB_HOST . ";port=" . DB_PORT . ";dbname=" . DB_NAME . ";charset=utf8mb4",
+            $dsn,
             DB_USER,
             DB_PASS,
             [
@@ -41,6 +44,7 @@ function getDBConnection() {
                 PDO::ATTR_EMULATE_PREPARES => false
             ]
         );
+
         return $pdo;
     } catch (PDOException $e) {
         error_log("Database connection error: " . $e->getMessage());
@@ -48,22 +52,18 @@ function getDBConnection() {
     }
 }
 
-/**
- * Test Database Connection
- */
 function testDatabaseConnection() {
     $pdo = getDBConnection();
+
     if ($pdo) {
         echo "Database connection: SUCCESS\n";
-        $pdo = null;
         return true;
-    } else {
-        echo "Database connection: FAILED\n";
-        return false;
     }
+
+    echo "Database connection: FAILED\n";
+    return false;
 }
 
-// Test connection if this file is accessed directly
 if (basename(__FILE__) == basename($_SERVER['PHP_SELF'])) {
     testDatabaseConnection();
 }
