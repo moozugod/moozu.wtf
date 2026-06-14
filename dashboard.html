@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moozu - Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: white;
+            overflow-x: hidden;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        /* Animated gradient background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(125deg, #000, #0a0a0a, #000);
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(0, 204, 85, 0.08) 0%, transparent 50%);
+            animation: floatGradient 25s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes floatGradient {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(20%, 15%) scale(1.1); }
+            66% { transform: translate(-15%, 20%) scale(0.95); }
+        }
+
+        .navbar {
+            position: fixed;
+            top: 40px;
+            right: 40px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            font-weight: 400;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            margin-left: 20px;
+        }
+
+        .nav-btn:hover {
+            color: white;
+        }
+
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: clamp(4rem, 12vw, 8rem);
+            font-weight: 100;
+            letter-spacing: -0.08em;
+            background: linear-gradient(90deg, #fff, #00cc55, #fff);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 4s linear infinite;
+            margin-bottom: 30px;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 200% center; }
+            50% { background-position: -200% center; }
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 60px;
+            letter-spacing: 0.5px;
+        }
+
+        .dashboard-section {
+            min-height: 100vh;
+            padding: 120px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 200;
+            margin-bottom: 60px;
+            letter-spacing: -1px;
+            opacity: 0.9;
+        }
+
+        .info-card {
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 30px;
+            background: rgba(255, 255, 255, 0.02);
+            text-align: left;
+        }
+
+        .extend-card {
+            padding: 40px;
+            border: 1px solid rgba(0, 204, 85, 0.2);
+            margin-bottom: 30px;
+            background: rgba(0, 204, 85, 0.05);
+            text-align: left;
+        }
+
+        .extend-title {
+            font-size: 1.2rem;
+            font-weight: 300;
+            color: #00cc55;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 300;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .info-value {
+            color: white;
+            font-weight: 400;
+            font-size: 16px;
+        }
+
+        .status-active {
+            color: rgba(0, 255, 136, 0.8);
+        }
+
+        .status-expired {
+            color: rgba(255, 68, 68, 0.8);
+        }
+
+        .download-section {
+            margin-top: 60px;
+        }
+
+        .download-btn {
+            background: transparent;
+            border: 1px solid rgba(0, 204, 85, 0.5);
+            color: rgba(0, 204, 85, 0.8);
+            padding: 20px 50px;
+            font-size: 16px;
+            font-weight: 400;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-decoration: none;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .download-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: rgba(0, 204, 85, 0.1);
+            transition: width 0.4s ease;
+            z-index: -1;
+        }
+
+        .download-btn:hover {
+            color: white;
+            border-color: rgba(0, 204, 85, 0.8);
+        }
+
+        .download-btn:hover::before {
+            width: 100%;
+        }
+
+        .download-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Form styling for extension */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 300;
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .form-group input {
+            width: 100%;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px;
+            color: white;
+            font-size: 14px;
+            font-weight: 300;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: rgba(0, 204, 85, 0.5);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .version-select {
+            width: 100%;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px;
+            color: white;
+            font-size: 14px;
+            font-weight: 300;
+            transition: border-color 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .version-select:focus {
+            outline: none;
+            border-color: rgba(0, 255, 136, 0.5);
+        }
+
+        .version-select option {
+            background: #0a0a0a;
+            color: white;
+        }
+
+        .extend-btn {
+            background: transparent;
+            border: 1px solid rgba(0, 204, 85, 0.5);
+            color: rgba(0, 204, 85, 0.8);
+            padding: 12px 30px;
+            font-size: 13px;
+            font-weight: 400;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .extend-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: rgba(0, 204, 85, 0.1);
+            transition: width 0.4s ease;
+            z-index: -1;
+        }
+
+        .extend-btn:hover {
+            color: white;
+            border-color: rgba(0, 204, 85, 0.8);
+        }
+
+        .extend-btn:hover::before {
+            width: 100%;
+        }
+
+        .extend-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            border: 1px solid;
+            display: none;
+        }
+
+        .alert-success {
+            background: rgba(0, 255, 136, 0.05);
+            color: rgba(0, 255, 136, 0.8);
+            border-color: rgba(0, 255, 136, 0.2);
+        }
+
+        .alert-error {
+            background: rgba(255, 68, 68, 0.05);
+            color: rgba(255, 68, 68, 0.8);
+            border-color: rgba(255, 68, 68, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                top: 25px;
+                right: 25px;
+            }
+            
+            .dashboard-section {
+                padding: 80px 25px;
+            }
+            
+            .info-card {
+                padding: 30px 20px;
+            }
+            
+            .hero-title {
+                font-size: 4rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="#" onclick="logout()" class="nav-btn">logout</a>
+    </nav>
+
+    <section class="hero">
+        <h1 class="hero-title">dashboard</h1>
+        <p class="hero-subtitle">welcome back, <span id="username">user</span></p>
+    </section>
+
+    <section class="dashboard-section">
+        <div class="container">
+            <h2 class="section-title">account information</h2>
+            
+            <div class="info-card">
+                <div class="info-item">
+                    <span class="info-label">username</span>
+                    <span class="info-value" id="user-username">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">email</span>
+                    <span class="info-value" id="user-email">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">license key</span>
+                    <span class="info-value" id="user-license-key">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">status</span>
+                    <span class="info-value" id="user-status">-</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">expires</span>
+                    <span class="info-value" id="user-expires">-</span>
+                </div>
+            </div>
+
+            <div class="extend-card">
+                <div class="extend-title">extend license</div>
+                <div id="extend-alert" class="alert"></div>
+                <form id="extend-form">
+                    <div class="form-group">
+                        <label for="new-license-key">new license key</label>
+                        <input type="text" id="new-license-key" placeholder="enter new license key" required>
+                    </div>
+                    <button type="submit" class="extend-btn" id="extend-btn">
+                        extend license
+                    </button>
+                </form>
+            </div>
+
+            <div class="download-section">
+                <div class="form-group">
+                    <label for="version-select">select version</label>
+                    <select id="version-select" class="version-select">
+                        <option value="">loading versions...</option>
+                    </select>
+                </div>
+                <button class="download-btn" id="download-btn" onclick="downloadApp()" disabled>
+                    download application
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const API_BASE_URL = window.location.origin + '/api';
+        
+        // Check if user is logged in and load user data
+        document.addEventListener('DOMContentLoaded', async function() {
+            const token = localStorage.getItem('userToken');
+            if (!token) {
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            // Decode token to get basic user info
+            try {
+                const userData = JSON.parse(atob(token));
+                if (userData.exp < Date.now() / 1000) {
+                    localStorage.removeItem('userToken');
+                    window.location.href = 'index.html';
+                    return;
+                }
+                
+                // Display basic user info from token
+                document.getElementById('username').textContent = userData.username;
+                
+                // Load detailed user information from server
+                await loadUserInfo();
+                
+                // Load available versions
+                loadVersions();
+                
+            } catch (error) {
+                console.error('Token decode error:', error);
+                localStorage.removeItem('userToken');
+                window.location.href = 'index.html';
+            }
+        });
+
+        async function loadUserInfo() {
+            try {
+                const token = localStorage.getItem('userToken');
+                const response = await fetch(`${API_BASE_URL}/get_user_info.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        token: token
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    const user = result.data.user;
+                    
+                    // Display user info
+                    document.getElementById('user-username').textContent = user.username;
+                    document.getElementById('user-email').textContent = user.email;
+                    document.getElementById('user-license-key').textContent = user.license_key;
+                    
+                    // Check expiry status
+                    if (user.expires_at) {
+                        const expiryDate = new Date(user.expires_at);
+                        const now = new Date();
+                        const timeLeft = expiryDate - now;
+                        
+                        if (timeLeft <= 0) {
+                            document.getElementById('user-status').textContent = 'expired';
+                            document.getElementById('user-status').className = 'info-value status-expired';
+                            document.getElementById('user-expires').textContent = 'expired';
+                            document.getElementById('download-btn').disabled = true;
+                            document.getElementById('download-btn').textContent = 'license expired';
+                        } else {
+                            document.getElementById('user-status').textContent = 'active';
+                            document.getElementById('user-status').className = 'info-value status-active';
+                            
+                            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                            if (days > 0) {
+                                document.getElementById('user-expires').textContent = `in ${days} day${days > 1 ? 's' : ''}`;
+                            } else {
+                                document.getElementById('user-expires').textContent = 'expires soon';
+                            }
+                        }
+                    } else {
+                        document.getElementById('user-status').textContent = 'permanent';
+                        document.getElementById('user-status').className = 'info-value status-active';
+                        document.getElementById('user-expires').textContent = 'never';
+                    }
+                } else {
+                    console.error('Failed to load user info:', result.message);
+                    showAlert('Failed to load user information', 'error');
+                }
+            } catch (error) {
+                console.error('Error loading user info:', error);
+                showAlert('Error loading user information', 'error');
+            }
+        }
+
+        function downloadApp() {
+            const versionSelect = document.getElementById('version-select');
+            const selectedVersion = versionSelect.value;
+            
+            if (!selectedVersion) {
+                showAlert('please select a version', 'error');
+                return;
+            }
+            
+            const token = localStorage.getItem('userToken');
+            const downloadUrl = `${API_BASE_URL}/download.php?token=${encodeURIComponent(token)}&version=${encodeURIComponent(selectedVersion)}`;
+            
+            // Create download link
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = `moozu-${selectedVersion}.zip`;
+            link.style.display = 'none';
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showAlert(`downloading moozu v${selectedVersion}...`, 'success');
+        }
+
+        async function loadVersions() {
+            try {
+                const token = localStorage.getItem('userToken');
+                const response = await fetch(`${API_BASE_URL}/get_versions.php?token=${encodeURIComponent(token)}`);
+                const result = await response.json();
+                
+                const versionSelect = document.getElementById('version-select');
+                const downloadBtn = document.getElementById('download-btn');
+                
+                if (result.success && result.data.versions.length > 0) {
+                    versionSelect.innerHTML = '<option value="">select version...</option>';
+                    
+                    result.data.versions.forEach(version => {
+                        const option = document.createElement('option');
+                        option.value = version.version;
+                        option.textContent = `v${version.version} (${formatFileSize(version.size)})`;
+                        versionSelect.appendChild(option);
+                    });
+                    
+                    // Enable download button when version is selected
+                    versionSelect.addEventListener('change', function() {
+                        downloadBtn.disabled = !this.value;
+                    });
+                } else {
+                    versionSelect.innerHTML = '<option value="">no versions available</option>';
+                    downloadBtn.disabled = true;
+                }
+            } catch (error) {
+                console.error('Error loading versions:', error);
+                const versionSelect = document.getElementById('version-select');
+                versionSelect.innerHTML = '<option value="">error loading versions</option>';
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function logout() {
+            localStorage.removeItem('userToken');
+            window.location.href = 'index.html';
+        }
+
+        // Handle license extension
+        document.getElementById('extend-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const newLicenseKey = document.getElementById('new-license-key').value.trim();
+            const extendBtn = document.getElementById('extend-btn');
+            const alertDiv = document.getElementById('extend-alert');
+            
+            if (!newLicenseKey) {
+                showAlert('please enter a license key', 'error');
+                return;
+            }
+            
+            extendBtn.disabled = true;
+            extendBtn.textContent = 'extending...';
+            
+            try {
+                const token = localStorage.getItem('userToken');
+                const response = await fetch(`${API_BASE_URL}/extend_license.php`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        token: token,
+                        new_license_key: newLicenseKey
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('license extended successfully!', 'success');
+                    document.getElementById('new-license-key').value = '';
+                    
+                    // Update user info
+                    if (result.data && result.data.user) {
+                        localStorage.setItem('user', JSON.stringify(result.data.user));
+                        updateUserInfo(result.data.user);
+                    }
+                } else {
+                    showAlert(result.message || 'failed to extend license', 'error');
+                }
+            } catch (error) {
+                console.error('Error extending license:', error);
+                showAlert('error extending license', 'error');
+            } finally {
+                extendBtn.disabled = false;
+                extendBtn.textContent = 'extend license';
+            }
+        });
+
+        function showAlert(message, type) {
+            const alertDiv = document.getElementById('extend-alert');
+            alertDiv.textContent = message;
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                alertDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function updateUserInfo(user) {
+            document.getElementById('user-username').textContent = user.username;
+            document.getElementById('user-email').textContent = user.email;
+            document.getElementById('user-license-key').textContent = user.license_key || '-';
+            document.getElementById('user-status').textContent = user.license_active ? 'active' : 'inactive';
+            document.getElementById('user-expires').textContent = user.expires_at ? new Date(user.expires_at).toLocaleDateString() : 'permanent';
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moozu - Premium Access</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: white;
+            overflow-x: hidden;
+            line-height: 1.6;
+            position: relative;
+        }
+
+        /* Animated gradient background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(125deg, #000, #0a0a0a, #000);
+            z-index: -2;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at center, rgba(0, 204, 85, 0.08) 0%, transparent 50%);
+            animation: floatGradient 25s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes floatGradient {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(20%, 15%) scale(1.1); }
+            66% { transform: translate(-15%, 20%) scale(0.95); }
+        }
+
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 40px;
+            left: 40px;
+            z-index: 1000;
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-btn {
+            color: rgba(255, 255, 255, 0.5);
+            text-decoration: none;
+            font-weight: 400;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-btn::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: #00cc55;
+            transition: width 0.3s ease;
+        }
+
+        .nav-btn:hover {
+            color: white;
+        }
+
+        .nav-btn:hover::after {
+            width: 100%;
+        }
+
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .hero-title {
+            font-size: clamp(6rem, 16vw, 14rem);
+            font-weight: 100;
+            letter-spacing: -0.08em;
+            background: linear-gradient(90deg, #fff, #00cc55, #fff);
+            background-size: 200% 100%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 4s linear infinite;
+            margin-bottom: 30px;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { background-position: 200% center; }
+            50% { background-position: -200% center; }
+        }
+
+        .hero-subtitle {
+            font-size: 1.2rem;
+            font-weight: 300;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 60px;
+            letter-spacing: 0.5px;
+        }
+
+        /* Pricing Section */
+        .pricing-section {
+            min-height: 100vh;
+            padding: 120px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 4vw, 3rem);
+            font-weight: 200;
+            margin-bottom: 60px;
+            letter-spacing: -1px;
+            opacity: 0.9;
+        }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 40px;
+            margin-bottom: 80px;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .pricing-card {
+            padding: 50px 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            transition: all 0.4s ease;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .pricing-card:hover {
+            border-color: rgba(0, 204, 85, 0.3);
+            transform: translateY(-10px);
+            background: rgba(0, 204, 85, 0.05);
+        }
+
+        .pricing-card.featured {
+            border-color: rgba(0, 204, 85, 0.5);
+            background: rgba(0, 204, 85, 0.08);
+        }
+
+        .pricing-card.featured::before {
+            content: 'MOST POPULAR';
+            position: absolute;
+            top: -1px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #00cc55;
+            color: white;
+            padding: 8px 20px;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+
+        .plan-name {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 20px;
+            color: #00cc55;
+        }
+
+        .plan-price {
+            font-size: 3rem;
+            font-weight: 100;
+            margin-bottom: 10px;
+            color: white;
+        }
+
+        .plan-period {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.4);
+            margin-bottom: 30px;
+        }
+
+        .plan-features {
+            list-style: none;
+            margin-bottom: 40px;
+        }
+
+        .plan-features li {
+            padding: 8px 0;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 14px;
+        }
+
+        .plan-features li::before {
+            content: '✓';
+            color: #00cc55;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        /* Purchase Button */
+        .purchase-btn {
+            background: transparent;
+            border: 1px solid rgba(0, 204, 85, 0.5);
+            color: rgba(0, 204, 85, 0.8);
+            padding: 16px 40px;
+            font-size: 14px;
+            font-weight: 400;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-decoration: none;
+            display: inline-block;
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .purchase-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: rgba(0, 204, 85, 0.1);
+            transition: width 0.4s ease;
+            z-index: -1;
+        }
+
+        .purchase-btn:hover {
+            color: white;
+            border-color: rgba(0, 204, 85, 0.8);
+        }
+
+        .purchase-btn:hover::before {
+            width: 100%;
+        }
+
+        /* Registration/Login Section */
+        .auth-section {
+            min-height: 100vh;
+            padding: 120px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auth-container {
+            max-width: 500px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .auth-tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.5);
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .auth-tab.active {
+            color: white;
+        }
+
+        .auth-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: #00cc55;
+        }
+
+        .auth-form {
+            display: none;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        .form-group {
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: rgba(255, 255, 255, 0.4);
+            font-weight: 300;
+            font-size: 12px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .form-group input {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 0;
+            color: white;
+            font-size: 15px;
+            font-weight: 300;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-bottom-color: rgba(0, 204, 85, 0.5);
+        }
+
+        .form-group input::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* CAPTCHA */
+        .captcha-container {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .captcha-challenge {
+            font-size: 18px;
+            font-weight: 300;
+            margin-bottom: 15px;
+            color: #00cc55;
+            font-family: 'Courier New', monospace;
+        }
+
+        .captcha-input {
+            width: 100%;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px;
+            color: white;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .captcha-refresh {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.6);
+            padding: 8px 16px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .captcha-refresh:hover {
+            border-color: rgba(0, 204, 85, 0.5);
+            color: #00cc55;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            background: transparent;
+            border: 1px solid rgba(0, 204, 85, 0.5);
+            color: rgba(0, 204, 85, 0.8);
+            padding: 16px 40px;
+            font-size: 14px;
+            font-weight: 400;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 0;
+            height: 100%;
+            background: rgba(0, 204, 85, 0.1);
+            transition: width 0.4s ease;
+            z-index: -1;
+        }
+
+        .submit-btn:hover {
+            color: white;
+            border-color: rgba(0, 204, 85, 0.8);
+        }
+
+        .submit-btn:hover::before {
+            width: 100%;
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Alert Messages */
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+            border: 1px solid;
+            display: none;
+        }
+
+        .alert-success {
+            background: rgba(0, 255, 136, 0.05);
+            color: rgba(0, 255, 136, 0.8);
+            border-color: rgba(0, 255, 136, 0.2);
+        }
+
+        .alert-error {
+            background: rgba(255, 68, 68, 0.05);
+            color: rgba(255, 68, 68, 0.8);
+            border-color: rgba(255, 68, 68, 0.2);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                top: 25px;
+                left: 25px;
+                gap: 20px;
+            }
+            
+            .nav-btn {
+                font-size: 12px;
+            }
+            
+            .pricing-section, .auth-section {
+                padding: 80px 25px;
+            }
+            
+            .pricing-grid {
+                grid-template-columns: 1fr;
+                gap: 30px;
+            }
+            
+            .pricing-card {
+                padding: 40px 30px;
+            }
+
+            .hero-title {
+                font-size: 5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .navbar {
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+            
+            .hero-title {
+                font-size: 4rem;
+            }
+            
+            .pricing-card {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="#pricing" class="nav-btn">pricing</a>
+        <a href="#register" class="nav-btn">register</a>
+        <a href="#login" class="nav-btn">login</a>
+    </nav>
+
+    <section class="hero">
+        <h1 class="hero-title">moozu</h1>
+    </section>
+
+    <section id="pricing" class="pricing-section">
+        <div class="container">
+            <h2 class="section-title">choose your plan</h2>
+            <div class="pricing-grid">
+                <!-- 1 Month Plan -->
+                <div class="pricing-card">
+                    <h3 class="plan-name">1 month</h3>
+                    <div class="plan-price">$7.99</div>
+                    <div class="plan-period">per month</div>
+                    <ul class="plan-features">
+                        <li>Full external access</li>
+                        <li>Premium features</li>
+                        <li>Priority support</li>
+                        <li>Regular updates</li>
+                    </ul>
+                    <button class="purchase-btn" onclick="purchasePlan('1month', 7.99)">purchase</button>
+                </div>
+
+                <!-- 3 Months Plan -->
+                <div class="pricing-card featured">
+                    <h3 class="plan-name">3 months</h3>
+                    <div class="plan-price">$18.99</div>
+                    <div class="plan-period">per 3 months</div>
+                    <ul class="plan-features">
+                        <li>Full external access</li>
+                        <li>Premium features</li>
+                        <li>Priority support</li>
+                        <li>Regular updates</li>
+                        <li>20% savings</li>
+                    </ul>
+                    <button class="purchase-btn" onclick="purchasePlan('3months', 18.99)">purchase</button>
+                </div>
+
+                <!-- 1 Year Plan -->
+                <div class="pricing-card">
+                    <h3 class="plan-name">1 year</h3>
+                    <div class="plan-price">$45.99</div>
+                    <div class="plan-period">per year</div>
+                    <ul class="plan-features">
+                        <li>Full external access</li>
+                        <li>Premium features</li>
+                        <li>Priority support</li>
+                        <li>Regular updates</li>
+                        <li>52% savings</li>
+                        <li>Exclusive features</li>
+                    </ul>
+                    <button class="purchase-btn" onclick="purchasePlan('1year', 45.99)">purchase</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="register" class="auth-section">
+        <div class="container">
+            <div class="auth-container">
+                <div class="auth-tabs">
+                    <div class="auth-tab active" onclick="switchTab('register')">register</div>
+                    <div class="auth-tab" onclick="switchTab('login')">login</div>
+                </div>
+
+                <div id="alerts"></div>
+
+                <!-- Registration Form -->
+                <form id="register-form" class="auth-form active">
+                    <div class="form-group">
+                        <label for="reg-username">username</label>
+                        <input type="text" id="reg-username" placeholder="enter username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-email">email</label>
+                        <input type="email" id="reg-email" placeholder="enter email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-password">password</label>
+                        <input type="password" id="reg-password" placeholder="enter password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="reg-license-key">license key</label>
+                        <input type="text" id="reg-license-key" placeholder="enter license key" required>
+                    </div>
+                    
+                    <!-- CAPTCHA -->
+                    <div class="captcha-container">
+                        <div class="captcha-challenge" id="captcha-challenge"></div>
+                        <input type="text" class="captcha-input" id="captcha-input" placeholder="enter captcha answer" required>
+                        <button type="button" class="captcha-refresh" onclick="generateCaptcha()">refresh</button>
+                    </div>
+
+                    <button type="submit" class="submit-btn">register</button>
+                </form>
+
+                <!-- Login Form -->
+                <form id="login-form" class="auth-form">
+                    <div class="form-group">
+                        <label for="login-username">username</label>
+                        <input type="text" id="login-username" placeholder="enter username" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">password</label>
+                        <input type="password" id="login-password" placeholder="enter password" required>
+                    </div>
+                    
+                    <!-- CAPTCHA -->
+                    <div class="captcha-container">
+                        <div class="captcha-challenge" id="login-captcha-challenge"></div>
+                        <input type="text" class="captcha-input" id="login-captcha-input" placeholder="enter captcha answer" required>
+                        <button type="button" class="captcha-refresh" onclick="generateLoginCaptcha()">refresh</button>
+                    </div>
+
+                    <button type="submit" class="submit-btn">login</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // CAPTCHA System
+        let captchaAnswer = '';
+        let loginCaptchaAnswer = '';
+
+        function generateCaptcha() {
+            const num1 = Math.floor(Math.random() * 10) + 1;
+            const num2 = Math.floor(Math.random() * 10) + 1;
+            const operations = ['+', '-', '*'];
+            const operation = operations[Math.floor(Math.random() * operations.length)];
+            
+            let answer;
+            let question;
+            let captchaData;
+            
+            switch(operation) {
+                case '+':
+                    answer = num1 + num2;
+                    question = `${num1} + ${num2}`;
+                    captchaData = `${num1} + ${num2} = ${answer}`;
+                    break;
+                case '-':
+                    const maxNum = Math.max(num1, num2);
+                    const minNum = Math.min(num1, num2);
+                    answer = maxNum - minNum;
+                    question = `${maxNum} - ${minNum}`;
+                    captchaData = `${maxNum} - ${minNum} = ${answer}`;
+                    break;
+                case '*':
+                    answer = num1 * num2;
+                    question = `${num1} × ${num2}`;
+                    captchaData = `${num1} * ${num2} = ${answer}`;
+                    break;
+            }
+            
+            // Create CAPTCHA ID with the equation and answer
+            captchaAnswer = btoa(captchaData); // Base64 encode the CAPTCHA data
+            
+            document.getElementById('captcha-challenge').textContent = `what is ${question}?`;
+            document.getElementById('captcha-input').value = '';
+        }
+
+        // Generate simple HWID for web login
+        function generateWebHWID() {
+            // Create a simple browser-based HWID using available information
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            ctx.textBaseline = 'top';
+            ctx.font = '14px Arial';
+            ctx.fillText('HWID Generation', 2, 2);
+            
+            const fingerprint = [
+                navigator.userAgent,
+                navigator.language,
+                screen.width + 'x' + screen.height,
+                new Date().getTimezoneOffset(),
+                canvas.toDataURL()
+            ].join('|');
+            
+            // Simple hash function
+            let hash = 0;
+            for (let i = 0; i < fingerprint.length; i++) {
+                const char = fingerprint.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash; // Convert to 32-bit integer
+            }
+            
+            // Convert to hex and pad to 16 characters
+            return Math.abs(hash).toString(16).padStart(16, '0').substring(0, 16);
+        }
+
+        function generateLoginCaptcha() {
+            const num1 = Math.floor(Math.random() * 10) + 1;
+            const num2 = Math.floor(Math.random() * 10) + 1;
+            const operations = ['+', '-', '*'];
+            const operation = operations[Math.floor(Math.random() * operations.length)];
+            
+            let answer;
+            let question;
+            let captchaData;
+            
+            switch(operation) {
+                case '+':
+                    answer = num1 + num2;
+                    question = `${num1} + ${num2}`;
+                    captchaData = `${num1} + ${num2} = ${answer}`;
+                    break;
+                case '-':
+                    const maxNum = Math.max(num1, num2);
+                    const minNum = Math.min(num1, num2);
+                    answer = maxNum - minNum;
+                    question = `${maxNum} - ${minNum}`;
+                    captchaData = `${maxNum} - ${minNum} = ${answer}`;
+                    break;
+                case '*':
+                    answer = num1 * num2;
+                    question = `${num1} × ${num2}`;
+                    captchaData = `${num1} * ${num2} = ${answer}`;
+                    break;
+            }
+            
+            // Create CAPTCHA ID with the equation and answer
+            loginCaptchaAnswer = btoa(captchaData); // Base64 encode the CAPTCHA data
+            
+            document.getElementById('login-captcha-challenge').textContent = `what is ${question}?`;
+            document.getElementById('login-captcha-input').value = '';
+        }
+
+        // Tab switching
+        function switchTab(tab) {
+            // Update tab appearance
+            document.querySelectorAll('.auth-tab').forEach(t => t.classList.remove('active'));
+            document.querySelector(`[onclick="switchTab('${tab}')"]`).classList.add('active');
+            
+            // Update form visibility
+            document.querySelectorAll('.auth-form').forEach(f => f.classList.remove('active'));
+            document.getElementById(`${tab}-form`).classList.add('active');
+            
+            // Clear alerts
+            document.getElementById('alerts').innerHTML = '';
+            
+            // Generate new CAPTCHA for the active form
+            if (tab === 'register') {
+                generateCaptcha();
+            } else {
+                generateLoginCaptcha();
+            }
+        }
+
+        // Purchase plan function
+        function purchasePlan(planType, price) {
+            // This will be handled by your redirect system
+            console.log(`Purchasing ${planType} for $${price}`);
+            // You can add your payment redirect logic here
+            alert(`Redirecting to payment for ${planType} - $${price}`);
+        }
+
+        // Form submissions
+        document.getElementById('register-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('reg-username').value.trim();
+            const email = document.getElementById('reg-email').value.trim();
+            const password = document.getElementById('reg-password').value;
+            const licenseKey = document.getElementById('reg-license-key').value.trim();
+            const captchaInput = document.getElementById('captcha-input').value.trim();
+            
+            if (!username || !email || !password || !licenseKey || !captchaInput) {
+                showAlert('please fill in all fields', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/register.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        email: email,
+                        password: password,
+                        license_key: licenseKey,
+                        captcha_answer: captchaInput,
+                        captcha_id: captchaAnswer
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    let message = 'Registration successful! You can now login.';
+                    if (result.data.expires_at) {
+                        const expiryDate = new Date(result.data.expires_at);
+                        message += ` Your license expires on ${expiryDate.toLocaleDateString()}.`;
+                    }
+                    showAlert(message, 'success');
+                    setTimeout(() => {
+                        switchTab('login');
+                    }, 3000);
+                } else {
+                    showAlert(result.message || 'Registration failed', 'error');
+                    generateCaptcha();
+                }
+            } catch (error) {
+                console.error('Registration error:', error);
+                showAlert('Registration failed. Please try again.', 'error');
+                generateCaptcha();
+            }
+        });
+
+        document.getElementById('login-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+            const captchaInput = document.getElementById('login-captcha-input').value.trim();
+            
+            if (!username || !password || !captchaInput) {
+                showAlert('please fill in all fields', 'error');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/api/login.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        password: password,
+                        captcha_answer: captchaInput,
+                        captcha_id: loginCaptchaAnswer
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    showAlert('Login successful! Redirecting...', 'success');
+                    // Store user token and redirect to dashboard
+                    localStorage.setItem('userToken', result.data.token);
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 2000);
+                } else {
+                    showAlert(result.message || 'Login failed', 'error');
+                    generateLoginCaptcha();
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                showAlert('Login failed. Please try again.', 'error');
+                generateLoginCaptcha();
+            }
+        });
+
+        // Show alert messages
+        function showAlert(message, type) {
+            const alertsContainer = document.getElementById('alerts');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            alert.style.display = 'block';
+            
+            alertsContainer.appendChild(alert);
+            
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Initialize CAPTCHA on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            generateCaptcha();
+        });
+    </script>
+</body>
+</html>
